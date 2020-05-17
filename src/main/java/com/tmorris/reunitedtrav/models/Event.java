@@ -1,7 +1,10 @@
 package com.tmorris.reunitedtrav.models;
 
 import com.tmorris.reunitedtrav.models.enums.Type;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -14,6 +17,9 @@ import java.util.List;
 
 @Entity
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -28,6 +34,7 @@ public class Event {
     private String name;
 
     @NotNull(message = "A description needs to be provided")
+    @Column(length = 100000, columnDefinition = "LONGTEXT")
     private String description;
 
     @NotNull(message = "Need to provide the minimum amount of occupants")
@@ -40,9 +47,6 @@ public class Event {
 
     @ElementCollection
     private List<String> images;
-
-    @ManyToMany
-    private List<Itinerary> itineraries;
 
     @NotNull(message = "A start date and time is required")
     private LocalDateTime startTime;

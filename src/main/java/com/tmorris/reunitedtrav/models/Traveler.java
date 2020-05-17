@@ -1,7 +1,10 @@
 package com.tmorris.reunitedtrav.models;
 
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -13,6 +16,9 @@ import java.util.List;
 
 @Entity
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Traveler {
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
@@ -39,12 +45,6 @@ public class Traveler {
     private String homeState;
 
     private String profilePicture;
-
-    @OneToMany
-    private List<Itinerary> itineraries;
-
-    @ManyToMany
-    private List<Family> families;
 
     @CreationTimestamp
     private LocalDateTime createDateTime;
