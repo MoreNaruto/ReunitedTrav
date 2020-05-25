@@ -4,3 +4,5 @@ spring.datasource.url=jdbc:mysql://${MYSQL_HOST:localhost}:3306/reunion_travel?u
 spring.datasource.username=
 spring.datasource.password=
 spring.jpa.show-sql=true
+jwt.secret=whatever
+jwt.ttyl=360000
