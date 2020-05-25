@@ -4,10 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Data
@@ -19,6 +21,14 @@ public class Family {
     @GeneratedValue(strategy= GenerationType.AUTO)
     private Integer id;
 
+    @GeneratedValue(generator = "uuid2")
+    @GenericGenerator(name = "uuid2", strategy = "org.hibernate.id.UUIDGenerator")
+    @Column(updatable = false, nullable = false)
+    private UUID uuid;
+
+    @OneToOne
+    private Traveler familyAccountOwner;
+
     @ManyToMany
     private List<Traveler> travelers;
 
@@ -26,4 +36,11 @@ public class Family {
     private String name;
 
     private String profilePicture;
+
+    @PrePersist
+    public void createUuid() {
+        if (uuid == null) {
+            uuid = UUID.randomUUID();
+        }
+    }
 }

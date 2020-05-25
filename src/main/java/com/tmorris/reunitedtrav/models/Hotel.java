@@ -1,17 +1,16 @@
 package com.tmorris.reunitedtrav.models;
 
+import com.tmorris.reunitedtrav.models.validators.ValidDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -19,9 +18,10 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Itinerary {
+@ValidDateTime(startTime = "checkIn", endTime = "checkOut")
+public class Hotel {
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
     @GeneratedValue(generator = "uuid2")
@@ -29,21 +29,15 @@ public class Itinerary {
     @Column(updatable = false, nullable = false)
     private UUID uuid;
 
-    @ManyToMany
-    private List<Event> events;
+    @NotNull(message = "Name of Hotel must be provided")
+    @Size(min = 1, max = 200)
+    private String name;
 
-    @ManyToMany
-    private List<Hotel> hotels;
+    @NotNull(message = "A check in time must be provided")
+    private LocalDateTime checkIn;
 
-    @ManyToOne
-    @NotNull(message = "A traveler is required.")
-    private Traveler traveler;
-
-    @CreationTimestamp
-    private LocalDateTime createDateTime;
-
-    @UpdateTimestamp
-    private LocalDateTime updateDateTime;
+    @NotNull(message = "A check out time must be provided")
+    private LocalDateTime checkOut;
 
     @PrePersist
     public void createUuid() {

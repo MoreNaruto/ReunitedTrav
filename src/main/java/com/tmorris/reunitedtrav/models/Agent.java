@@ -1,6 +1,5 @@
 package com.tmorris.reunitedtrav.models;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,13 +19,13 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Traveler {
+public class Agent {
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
-    @GeneratedValue(generator = "uuid2")
-    @GenericGenerator(name = "uuid2", strategy = "org.hibernate.id.UUIDGenerator")
+    @GeneratedValue(generator = "uuid4")
+    @GenericGenerator(name = "uuid4", strategy = "org.hibernate.id.UUIDGenerator")
     @Column(updatable = false, nullable = false)
     private UUID uuid;
 
@@ -41,14 +40,6 @@ public class Traveler {
     @NotNull(message = "Email is required")
     @Size(min = 1, max = 500)
     private String email;
-
-    @NotNull(message = "City is required")
-    @Size(min = 1, max = 200)
-    private String homeCity;
-
-    @NotNull(message = "State is required")
-    @Size(min = 1, max = 200)
-    private String homeState;
 
     private String profilePicture;
 
