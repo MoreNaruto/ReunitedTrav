@@ -6,3 +6,4 @@ spring.datasource.password=
 spring.jpa.show-sql=true
 jwt.secret=whatever
 jwt.ttyl=360000
+bcrypt.log-rounds=12

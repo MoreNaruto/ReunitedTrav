@@ -1,6 +1,7 @@
 package com.tmorris.reunitedtrav.models;
 
 
+import com.tmorris.reunitedtrav.models.validators.ValidPhoneNumber;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -42,6 +43,10 @@ public class Traveler {
     @Size(min = 1, max = 500)
     private String email;
 
+    @NotNull(message = "Phone number is required")
+    @ValidPhoneNumber
+    private String phoneNumber;
+
     @NotNull(message = "City is required")
     @Size(min = 1, max = 200)
     private String homeCity;
@@ -49,6 +54,10 @@ public class Traveler {
     @NotNull(message = "State is required")
     @Size(min = 1, max = 200)
     private String homeState;
+
+    @OneToOne
+    @NotNull
+    private User user;
 
     private String profilePicture;
 

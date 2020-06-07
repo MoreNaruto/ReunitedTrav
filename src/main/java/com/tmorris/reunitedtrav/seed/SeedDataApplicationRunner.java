@@ -4,11 +4,13 @@ import com.github.javafaker.Faker;
 import com.tmorris.reunitedtrav.models.*;
 import com.tmorris.reunitedtrav.models.enums.Type;
 import com.tmorris.reunitedtrav.repositories.*;
+import com.tmorris.reunitedtrav.utils.UpdateBCrypt;
 import org.apache.commons.math3.random.RandomDataGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Profile;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -25,6 +27,8 @@ public class SeedDataApplicationRunner implements ApplicationRunner {
     private final ItineraryRepository itineraryRepository;
     private final TravelerRepository travelerRepository;
     private final HotelRepository hotelRepository;
+    private final UserRepository userRepository;
+    private final UpdateBCrypt updateBCrypt;
 
     @Autowired
     public SeedDataApplicationRunner(
@@ -32,13 +36,17 @@ public class SeedDataApplicationRunner implements ApplicationRunner {
             FamilyRepository familyRepository,
             ItineraryRepository itineraryRepository,
             TravelerRepository travelerRepository,
-            HotelRepository hotelRepository
+            HotelRepository hotelRepository,
+            UserRepository userRepository,
+            UpdateBCrypt updateBCrypt
     ) {
         this.eventRepository = eventRepository;
         this.familyRepository = familyRepository;
         this.itineraryRepository = itineraryRepository;
         this.travelerRepository = travelerRepository;
         this.hotelRepository = hotelRepository;
+        this.userRepository = userRepository;
+        this.updateBCrypt = updateBCrypt;
     }
 
     @Override
@@ -126,6 +134,13 @@ public class SeedDataApplicationRunner implements ApplicationRunner {
                     numberOfHotelsPerItinerary.get(1)
             );
 
+            User user = User.builder()
+                    .username(faker.funnyName().name())
+                    .password(updateBCrypt.hash(faker.twinPeaks().quote()))
+                    .build();
+
+            userRepository.save(user);
+
             Traveler traveler = Traveler.builder()
                     .email(faker.bothify("????##@gmail.com"))
                     .firstName(faker.name().firstName())
@@ -133,6 +148,7 @@ public class SeedDataApplicationRunner implements ApplicationRunner {
                     .homeCity(faker.address().cityName())
                     .homeState(faker.address().state())
                     .profilePicture(faker.bothify("????##.jpg"))
+                    .user(user)
                     .build();
 
             travelerList.add(traveler);
@@ -172,7 +188,7 @@ public class SeedDataApplicationRunner implements ApplicationRunner {
                             .plusDays(randomDataGenerator.nextLong(1, 10))
                     )
                     .checkOut(LocalDateTime.now()
-                            .plusSeconds(randomDataGenerator.nextLong(400,  1200))
+                            .plusSeconds(randomDataGenerator.nextLong(400, 1200))
                             .plusDays(randomDataGenerator.nextLong(12, 25))
                     )
                     .build());

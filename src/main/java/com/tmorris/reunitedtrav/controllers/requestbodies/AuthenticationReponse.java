@@ -1,4 +1,4 @@
-package com.tmorris.reunitedtrav.models;
+package com.tmorris.reunitedtrav.controllers.requestbodies;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
