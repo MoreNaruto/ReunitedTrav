@@ -4,7 +4,6 @@ import com.github.javafaker.Faker;
 import com.tmorris.reunitedtrav.models.*;
 import com.tmorris.reunitedtrav.models.enums.Type;
 import com.tmorris.reunitedtrav.repositories.*;
-import com.tmorris.reunitedtrav.utils.UpdateBCrypt;
 import org.apache.commons.math3.random.RandomDataGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
@@ -27,8 +26,7 @@ public class SeedDataApplicationRunner implements ApplicationRunner {
     private final ItineraryRepository itineraryRepository;
     private final TravelerRepository travelerRepository;
     private final HotelRepository hotelRepository;
-    private final UserRepository userRepository;
-    private final UpdateBCrypt updateBCrypt;
+    private final AccountRepository accountRepository;
 
     @Autowired
     public SeedDataApplicationRunner(
@@ -37,16 +35,14 @@ public class SeedDataApplicationRunner implements ApplicationRunner {
             ItineraryRepository itineraryRepository,
             TravelerRepository travelerRepository,
             HotelRepository hotelRepository,
-            UserRepository userRepository,
-            UpdateBCrypt updateBCrypt
+            AccountRepository accountRepository
     ) {
         this.eventRepository = eventRepository;
         this.familyRepository = familyRepository;
         this.itineraryRepository = itineraryRepository;
         this.travelerRepository = travelerRepository;
         this.hotelRepository = hotelRepository;
-        this.userRepository = userRepository;
-        this.updateBCrypt = updateBCrypt;
+        this.accountRepository = accountRepository;
     }
 
     @Override
@@ -134,12 +130,12 @@ public class SeedDataApplicationRunner implements ApplicationRunner {
                     numberOfHotelsPerItinerary.get(1)
             );
 
-            User user = User.builder()
+            Account account = Account.builder()
                     .username(faker.funnyName().name())
-                    .password(updateBCrypt.hash(faker.twinPeaks().quote()))
+                    .password(BCrypt.hashpw(faker.twinPeaks().quote(), "12"))
                     .build();
 
-            userRepository.save(user);
+            accountRepository.save(account);
 
             Traveler traveler = Traveler.builder()
                     .email(faker.bothify("????##@gmail.com"))
@@ -148,7 +144,7 @@ public class SeedDataApplicationRunner implements ApplicationRunner {
                     .homeCity(faker.address().cityName())
                     .homeState(faker.address().state())
                     .profilePicture(faker.bothify("????##.jpg"))
-                    .user(user)
+                    .account(account)
                     .build();
 
             travelerList.add(traveler);

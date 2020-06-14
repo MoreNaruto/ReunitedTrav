@@ -57,7 +57,7 @@ public class Traveler {
 
     @OneToOne
     @NotNull
-    private User user;
+    private Account account;
 
     private String profilePicture;
 

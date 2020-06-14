@@ -56,7 +56,7 @@ public class Agent {
 
     @OneToOne
     @NotNull
-    private User user;
+    private Account account;
 
     @PrePersist
     public void createUuid() {

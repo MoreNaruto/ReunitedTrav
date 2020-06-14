@@ -1,9 +1,8 @@
 package com.tmorris.reunitedtrav.models;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.tmorris.reunitedtrav.utils.AES256Encryptor;
+import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -13,10 +12,11 @@ import java.util.UUID;
 
 @Entity
 @Data
+@ToString(exclude = "password")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
+public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
@@ -28,10 +28,12 @@ public class User {
 
     @NotNull(message = "username is required")
     @Size(min = 1, max = 200)
+    @Column(unique = true)
     private String username;
 
     @NotNull(message = "password is required")
     @Size(min = 1, max = 200)
+    @JsonIgnore
     private String password;
 
     @PrePersist

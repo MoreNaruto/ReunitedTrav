@@ -1,10 +1,10 @@
 package com.tmorris.reunitedtrav.services;
 
 import com.tmorris.reunitedtrav.controllers.requestbodies.TravelerSignUpForm;
+import com.tmorris.reunitedtrav.models.Account;
 import com.tmorris.reunitedtrav.models.Traveler;
-import com.tmorris.reunitedtrav.models.User;
+import com.tmorris.reunitedtrav.repositories.AccountRepository;
 import com.tmorris.reunitedtrav.repositories.TravelerRepository;
-import com.tmorris.reunitedtrav.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -14,7 +14,7 @@ import javax.transaction.Transactional;
 @Service
 public class TravelerService {
     @Autowired
-    private UserRepository userRepository;
+    private AccountRepository accountRepository;
 
     @Autowired
     private TravelerRepository travelerRepository;
@@ -24,15 +24,15 @@ public class TravelerService {
 
     @Transactional(rollbackOn = Exception.class)
     public void signUp(TravelerSignUpForm signUpForm) {
-        User user = User.builder()
+        Account account = Account.builder()
                 .username(signUpForm.getUsername())
                 .password(passwordEncoder.encode(signUpForm.getPassword()))
                 .build();
 
-        userRepository.save(user);
+        accountRepository.save(account);
 
         Traveler traveler = Traveler.builder()
-                .user(user)
+                .account(account)
                 .profilePicture(signUpForm.getProfilePicture())
                 .homeState(signUpForm.getHomeState())
                 .homeCity(signUpForm.getHomeCity())
