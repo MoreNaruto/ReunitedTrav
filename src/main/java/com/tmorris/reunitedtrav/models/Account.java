@@ -1,7 +1,6 @@
 package com.tmorris.reunitedtrav.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.tmorris.reunitedtrav.utils.AES256Encryptor;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
