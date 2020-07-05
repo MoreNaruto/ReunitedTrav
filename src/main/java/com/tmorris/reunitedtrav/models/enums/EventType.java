@@ -1,6 +1,6 @@
 package com.tmorris.reunitedtrav.models.enums;
 
-public enum Type {
+public enum EventType {
     TOUR,
     CAMPING,
     HIKING,

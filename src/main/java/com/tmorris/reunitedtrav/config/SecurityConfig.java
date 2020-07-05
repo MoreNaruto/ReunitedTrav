@@ -34,25 +34,34 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+//        http
+//                .authorizeRequests()
+//                .antMatchers(
+//                        HttpMethod.GET,
+//                        "/index*", "/static/**", "/*.js", "/*.json", "/*.ico")
+//                .permitAll()
+//                .anyRequest().authenticated()
+//                .and()
+//                .formLogin().loginPage("/index.html")
+//                .loginProcessingUrl("/perform_login")
+//                .defaultSuccessUrl("/homepage.html", true)
+//                .failureUrl("/index.html?error=true")
+//                .permitAll()
+//                .and()
+//                .httpBasic()
+//                .and()
+//                .csrf().disable()
+//                .logout()
+//                .logoutSuccessUrl("/");
         http
                 .authorizeRequests()
-                .antMatchers(
-                        HttpMethod.GET,
-                        "/index*", "/static/**", "/*.js", "/*.json", "/*.ico")
-                .permitAll()
-                .anyRequest().authenticated()
-                .and()
-                .formLogin().loginPage("/index.html")
-                .loginProcessingUrl("/perform_login")
-                .defaultSuccessUrl("/homepage.html", true)
-                .failureUrl("/index.html?error=true")
+                .anyRequest()
                 .permitAll()
                 .and()
-                .httpBasic()
+                .cors()
                 .and()
-                .csrf().disable()
-                .logout()
-                .logoutSuccessUrl("/");
+                .csrf()
+                .disable();
     }
 
     @Bean

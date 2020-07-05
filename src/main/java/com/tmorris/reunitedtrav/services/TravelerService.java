@@ -1,6 +1,6 @@
 package com.tmorris.reunitedtrav.services;
 
-import com.tmorris.reunitedtrav.controllers.requestbodies.TravelerSignUpForm;
+import com.tmorris.reunitedtrav.controllers.jsonbodies.TravelerSignUpForm;
 import com.tmorris.reunitedtrav.models.Account;
 import com.tmorris.reunitedtrav.models.Traveler;
 import com.tmorris.reunitedtrav.repositories.AccountRepository;
@@ -13,14 +13,16 @@ import javax.transaction.Transactional;
 
 @Service
 public class TravelerService {
-    @Autowired
-    private AccountRepository accountRepository;
+    private final AccountRepository accountRepository;
+    private final TravelerRepository travelerRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    private TravelerRepository travelerRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    public TravelerService(AccountRepository accountRepository, TravelerRepository travelerRepository, PasswordEncoder passwordEncoder) {
+        this.accountRepository = accountRepository;
+        this.travelerRepository = travelerRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @Transactional(rollbackOn = Exception.class)
     public void signUp(TravelerSignUpForm signUpForm) {

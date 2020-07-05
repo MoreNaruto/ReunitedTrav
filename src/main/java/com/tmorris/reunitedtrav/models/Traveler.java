@@ -8,12 +8,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -26,9 +28,10 @@ public class Traveler {
     @GeneratedValue(strategy= GenerationType.AUTO)
     private Integer id;
 
-    @GeneratedValue(generator = "uuid2")
-    @GenericGenerator(name = "uuid2", strategy = "org.hibernate.id.UUIDGenerator")
-    @Column(updatable = false, nullable = false)
+    @GeneratedValue(generator = "uuid4")
+    @GenericGenerator(name = "uuid4", strategy = "org.hibernate.id.UUIDGenerator")
+    @Column(updatable = false, nullable = false, unique = true)
+    @Type(type = "org.hibernate.type.UUIDCharType")
     private UUID uuid;
 
     @NotNull(message = "First name is required")
@@ -59,7 +62,13 @@ public class Traveler {
     @NotNull
     private Account account;
 
+    @OneToMany
+    private List<Itinerary> itineraries;
+
     private String profilePicture;
+
+    @NotNull(message = "A birthday must be provided")
+    private LocalDateTime birthday;
 
     @CreationTimestamp
     private LocalDateTime createDateTime;

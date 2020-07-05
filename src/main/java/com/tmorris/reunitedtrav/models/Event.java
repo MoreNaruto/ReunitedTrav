@@ -1,6 +1,8 @@
 package com.tmorris.reunitedtrav.models;
 
-import com.tmorris.reunitedtrav.models.enums.Type;
+import com.tmorris.reunitedtrav.models.converter.AddressConverter;
+import com.tmorris.reunitedtrav.models.enums.EventType;
+import com.tmorris.reunitedtrav.models.enums.Status;
 import com.tmorris.reunitedtrav.models.validators.ValidEvent;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,6 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
@@ -30,18 +33,27 @@ public class Event {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
-    @GeneratedValue(generator = "uuid2")
-    @GenericGenerator(name = "uuid2", strategy = "org.hibernate.id.UUIDGenerator")
-    @Column(updatable = false, nullable = false)
+    @GeneratedValue(generator = "uuid4")
+    @GenericGenerator(name = "uuid4", strategy = "org.hibernate.id.UUIDGenerator")
+    @Column(updatable = false, nullable = false, unique = true)
+    @Type(type = "org.hibernate.type.UUIDCharType")
     private UUID uuid;
 
     @Enumerated(EnumType.STRING)
     @NotNull(message = "Type can not be null")
-    private Type type;
+    private EventType eventType;
+
+    @Enumerated(EnumType.STRING)
+    @NotNull(message = "Status can not be null")
+    private Status status;
 
     @NotNull(message = "A name must be provided")
     @Size(min = 1, max = 200)
     private String name;
+
+    @Column(columnDefinition = "TEXT")
+    @Convert(converter = AddressConverter.class)
+    private Address address;
 
     @NotNull(message = "A description needs to be provided")
     @Column(length = 100000, columnDefinition = "LONGTEXT")
@@ -57,13 +69,18 @@ public class Event {
     @Max(value = 10000, message = "Too many occupants for one event")
     private Integer maximumAmountOfPeople;
 
+    private Integer currentNumberOfOccupants;
+
+    private Boolean adultOnly;
+
+    @Column(length = 100000, columnDefinition = "LONGTEXT")
+    private String notes;
+
     @ElementCollection
     private List<String> images;
 
-    @NotNull(message = "A start date and time is required")
     private LocalDateTime startTime;
 
-    @NotNull(message = "A end date and time is required")
     private LocalDateTime endTime;
 
     @CreationTimestamp

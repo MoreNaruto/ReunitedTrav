@@ -1,6 +1,7 @@
 package com.tmorris.reunitedtrav.models.validators;
 
 import com.tmorris.reunitedtrav.models.Event;
+import com.tmorris.reunitedtrav.models.enums.Status;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -19,13 +20,18 @@ public class EventValidator implements ConstraintValidator<ValidEvent, Event> {
             return true;
         }
 
-        if (!(event instanceof Event)) {
-            throw new IllegalArgumentException("Illegal method signature, "
-                    + "expected parameter of type Event.");
+        if (isEventTimeLineNotProvided(event)) {
+            return false;
         }
 
         return event.getMinimumAmountOfPeople() < event.getMaximumAmountOfPeople()
                 && event.getStartTime().isAfter(LocalDateTime.now())
                 && event.getStartTime().isBefore(event.getEndTime());
+    }
+
+    private boolean isEventTimeLineNotProvided(Event event) {
+        return event.getStatus().eventTimeRequired() &&
+                (event.getStartTime() == null ||
+                        event.getEndTime() == null);
     }
 }

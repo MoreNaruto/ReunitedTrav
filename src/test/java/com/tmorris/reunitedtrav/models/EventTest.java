@@ -1,6 +1,6 @@
 package com.tmorris.reunitedtrav.models;
 
-import com.tmorris.reunitedtrav.models.enums.Type;
+import com.tmorris.reunitedtrav.models.enums.EventType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -27,7 +27,7 @@ class EventTest {
     void shouldReturnInvalidDate() {
         Event event = Event.builder()
                 .name("Bob's Burger")
-                .type(Type.CAMPING)
+                .eventType(EventType.CAMPING)
                 .minimumAmountOfPeople(2)
                 .maximumAmountOfPeople(10)
                 .images(List.of())
@@ -45,7 +45,7 @@ class EventTest {
     void shouldReturnInvalidOccupants() {
         Event event = Event.builder()
                 .name("Bob's Burger")
-                .type(Type.CAMPING)
+                .eventType(EventType.CAMPING)
                 .minimumAmountOfPeople(10)
                 .maximumAmountOfPeople(2)
                 .images(List.of())

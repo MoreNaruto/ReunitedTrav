@@ -1,7 +1,7 @@
 package com.tmorris.reunitedtrav.repositories;
 
 import com.tmorris.reunitedtrav.models.Traveler;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface TravelerRepository extends CrudRepository<Traveler, Integer> {
+public interface TravelerRepository extends JpaRepository<Traveler, Integer> {
 }

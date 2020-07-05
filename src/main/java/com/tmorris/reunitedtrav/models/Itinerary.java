@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
@@ -21,12 +22,13 @@ import java.util.UUID;
 @AllArgsConstructor
 public class Itinerary {
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
-    @GeneratedValue(generator = "uuid2")
-    @GenericGenerator(name = "uuid2", strategy = "org.hibernate.id.UUIDGenerator")
-    @Column(updatable = false, nullable = false)
+    @GeneratedValue(generator = "uuid4")
+    @GenericGenerator(name = "uuid4", strategy = "org.hibernate.id.UUIDGenerator")
+    @Column(updatable = false, nullable = false, unique = true)
+    @Type(type = "org.hibernate.type.UUIDCharType")
     private UUID uuid;
 
     @ManyToMany
@@ -34,10 +36,6 @@ public class Itinerary {
 
     @ManyToMany
     private List<Hotel> hotels;
-
-    @ManyToOne
-    @NotNull(message = "A traveler is required.")
-    private Traveler traveler;
 
     @CreationTimestamp
     private LocalDateTime createDateTime;

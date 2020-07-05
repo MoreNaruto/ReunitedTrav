@@ -2,7 +2,7 @@ package com.tmorris.reunitedtrav.seed;
 
 import com.github.javafaker.Faker;
 import com.tmorris.reunitedtrav.models.*;
-import com.tmorris.reunitedtrav.models.enums.Type;
+import com.tmorris.reunitedtrav.models.enums.EventType;
 import com.tmorris.reunitedtrav.repositories.*;
 import org.apache.commons.math3.random.RandomDataGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -137,6 +137,11 @@ public class SeedDataApplicationRunner implements ApplicationRunner {
 
             accountRepository.save(account);
 
+            itineraryList.add(Itinerary.builder()
+                    .events(events)
+                    .hotels(hotels)
+                    .build());
+
             Traveler traveler = Traveler.builder()
                     .email(faker.bothify("????##@gmail.com"))
                     .firstName(faker.name().firstName())
@@ -145,15 +150,10 @@ public class SeedDataApplicationRunner implements ApplicationRunner {
                     .homeState(faker.address().state())
                     .profilePicture(faker.bothify("????##.jpg"))
                     .account(account)
+                    .itineraries(itineraryList)
                     .build();
 
             travelerList.add(traveler);
-
-            itineraryList.add(Itinerary.builder()
-                    .events(events)
-                    .hotels(hotels)
-                    .traveler(traveler)
-                    .build());
         }
     }
 
@@ -228,7 +228,7 @@ public class SeedDataApplicationRunner implements ApplicationRunner {
                     .maximumAmountOfPeople(faker.random().nextInt(2, 100))
                     .minimumAmountOfPeople(1)
                     .name(faker.funnyName().name())
-                    .type(Type.values()[faker.random().nextInt(8)])
+                    .eventType(EventType.values()[faker.random().nextInt(8)])
                     .startTime(LocalDateTime.now()
                             .plusSeconds(randomDataGenerator.nextLong(100, 800))
                             .plusDays(randomDataGenerator.nextLong(1, 10))
