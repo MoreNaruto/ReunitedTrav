@@ -1,5 +1,6 @@
 package com.tmorris.reunitedtrav.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tmorris.reunitedtrav.models.converter.AddressConverter;
 import com.tmorris.reunitedtrav.models.enums.EventType;
 import com.tmorris.reunitedtrav.models.enums.Status;
@@ -31,6 +32,7 @@ import java.util.UUID;
 public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @JsonIgnore
     private Integer id;
 
     @GeneratedValue(generator = "uuid4")

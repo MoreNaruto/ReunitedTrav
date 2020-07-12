@@ -7,10 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/event")
+@RequestMapping("/events")
 public class EventController {
     private EventService eventService;
 
@@ -32,5 +33,10 @@ public class EventController {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(event);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Event>> getEvents() {
+        return ResponseEntity.ok(eventService.getEvents());
     }
 }
