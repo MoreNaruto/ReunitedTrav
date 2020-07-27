@@ -42,6 +42,7 @@ public class TravelerService {
                 .lastName(signUpForm.getLastName())
                 .phoneNumber(signUpForm.getPhoneNumber())
                 .email(signUpForm.getEmail())
+                .birthday(signUpForm.getBirthday())
                 .build();
 
         travelerRepository.save(traveler);

@@ -6,3 +6,4 @@ spring.datasource.password=
 spring.jpa.show-sql=true
 aes.secretKey=whatever
 aes.salt=12
+spring.http.converters.preferred-json-mapper=gson

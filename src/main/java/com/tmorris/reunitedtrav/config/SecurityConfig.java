@@ -29,62 +29,35 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter implements Filt
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.authenticationProvider(authProvider());
-    }
-
-    @Override
-    public void configure(WebSecurity web) {
-        web.ignoring().antMatchers("/traveler/sign-up");
+        auth
+                .userDetailsService(this.userDetailsService)
+                .passwordEncoder(passwordEncoder());
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-//        http
-//                .authorizeRequests()
-//                .antMatchers(
-//                        HttpMethod.GET,
-//                        "/index*", "/static/**", "/*.js", "/*.json", "/*.ico")
-//                .permitAll()
-//                .anyRequest().authenticated()
-//                .and()
-//                .formLogin().loginPage("/index.html")
-//                .loginProcessingUrl("/perform_login")
-//                .defaultSuccessUrl("/homepage.html", true)
-//                .failureUrl("/index.html?error=true")
-//                .permitAll()
-//                .and()
-//                .httpBasic()
-//                .and()
-//                .csrf().disable()
-//                .logout()
-//                .logoutSuccessUrl("/");
         http
                 .authorizeRequests()
-                .anyRequest()
-                .permitAll()
+                    .antMatchers(HttpMethod.OPTIONS,"/**")
+                    .permitAll()
+                .antMatchers(HttpMethod.POST, "/travelers/sign-up").permitAll()
+                .anyRequest().authenticated()
                 .and()
-                .cors()
-                .and()
+                .formLogin()
+                    .defaultSuccessUrl("/", true)
+                    .permitAll()
+                    .and()
+                .httpBasic()
+                    .and()
                 .csrf()
-                .disable();
+                    .disable()
+                .logout()
+                    .logoutSuccessUrl("/");
     }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    public DaoAuthenticationProvider authProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService);
-        authProvider.setPasswordEncoder(passwordEncoder());
-        return authProvider;
-    }
-
-    @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
-
     }
 
     @Override
@@ -97,10 +70,5 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter implements Filt
 
         // pass the request along the filter chain
         chain.doFilter(request, servletResponse);
-    }
-
-    @Override
-    public void destroy() {
-
     }
 }
