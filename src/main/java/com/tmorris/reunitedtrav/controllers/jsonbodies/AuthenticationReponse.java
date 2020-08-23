@@ -5,10 +5,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AuthenticationReponse {
+public class AuthenticationReponse implements Serializable {
+    private static final long serialVersionUID = 3930190626895020902L;
     private String jwt;
 }

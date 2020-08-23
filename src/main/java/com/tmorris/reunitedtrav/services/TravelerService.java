@@ -18,7 +18,10 @@ public class TravelerService {
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public TravelerService(AccountRepository accountRepository, TravelerRepository travelerRepository, PasswordEncoder passwordEncoder) {
+    public TravelerService(
+            AccountRepository accountRepository,
+            TravelerRepository travelerRepository,
+            PasswordEncoder passwordEncoder) {
         this.accountRepository = accountRepository;
         this.travelerRepository = travelerRepository;
         this.passwordEncoder = passwordEncoder;
