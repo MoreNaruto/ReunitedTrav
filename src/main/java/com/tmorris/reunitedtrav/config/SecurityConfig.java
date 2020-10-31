@@ -2,38 +2,36 @@ package com.tmorris.reunitedtrav.config;
 
 import com.tmorris.reunitedtrav.security.JWTAuthenticationEntryPoint;
 import com.tmorris.reunitedtrav.security.JWTAuthenticationFilter;
+import com.tmorris.reunitedtrav.security.JWTAuthorizationFilter;
+import com.tmorris.reunitedtrav.security.util.JwtTokenUtil;
 import com.tmorris.reunitedtrav.services.JpaAccountUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
-import javax.servlet.*;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-public class SecurityConfig extends WebSecurityConfigurerAdapter implements Filter {
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private JWTAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     @Autowired
     private JpaAccountUserDetailsService jwtUserDetailsService;
     @Autowired
-    private JWTAuthenticationFilter jwtRequestFilter;
+    private JwtTokenUtil jwtTokenUtil;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -45,16 +43,23 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter implements Filt
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
+                .cors()
+                .and()
                 .csrf()
                 .disable()
                 .authorizeRequests()
                     .antMatchers(HttpMethod.OPTIONS,"/**")
                     .permitAll()
                 .antMatchers(HttpMethod.POST, "/travelers/sign-up").permitAll()
+                .antMatchers(HttpMethod.GET, "/token-validity").permitAll()
                 .antMatchers("/authenticate").permitAll()
                 .anyRequest()
-                .authenticated().and()
-                .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and()
+                .authenticated()
+                .and()
+                .addFilter(new JWTAuthenticationFilter(jwtUserDetailsService, jwtTokenUtil, authenticationManager()))
+                .addFilter(new JWTAuthorizationFilter(authenticationManager(), jwtTokenUtil))
+                .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     }
@@ -70,15 +75,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter implements Filt
         return super.authenticationManagerBean();
     }
 
-    @Override
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain) throws IOException, ServletException {
-        HttpServletRequest request = (HttpServletRequest) servletRequest;
-
-        // Authorize (allow) all domains to consume the content
-        ((HttpServletResponse) servletResponse).addHeader("Access-Control-Allow-Origin", "*");
-        ((HttpServletResponse) servletResponse).addHeader("Access-Control-Allow-Methods", "GET, OPTIONS, HEAD, PUT, POST");
-
-        // pass the request along the filter chain
-        chain.doFilter(request, servletResponse);
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", new CorsConfiguration().applyPermitDefaultValues());
+        return source;
     }
 }

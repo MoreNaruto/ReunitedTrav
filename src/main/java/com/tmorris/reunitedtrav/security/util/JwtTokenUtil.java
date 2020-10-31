@@ -13,6 +13,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import static com.tmorris.reunitedtrav.security.util.SecurityConstants.TOKEN_PREFIX;
+
 @Component
 public class JwtTokenUtil implements Serializable {
 
@@ -38,7 +40,7 @@ public class JwtTokenUtil implements Serializable {
     }
 
     private Claims getAllClaimsFromToken(String token) {
-        return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+        return Jwts.parser().setSigningKey(secret).parseClaimsJws(token.replace(TOKEN_PREFIX, "")).getBody();
     }
 
     private Boolean isTokenExpired(String token) {
@@ -47,14 +49,17 @@ public class JwtTokenUtil implements Serializable {
     }
 
     public String generateToken(UserDetails userDetails) {
-        Map<String, Object> claims = new HashMap<>();
-        return doGenerateToken(claims, userDetails.getUsername());
+        Claims claims = Jwts.claims().setSubject(userDetails.getUsername());
+        return doGenerateToken(claims);
     }
 
-    private String doGenerateToken(Map<String, Object> claims, String subject) {
-        return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
+    private String doGenerateToken(Map<String, Object> claims) {
+        return Jwts.builder()
+                .setClaims(claims)
+                .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + Long.parseLong(tokenValidity) * 1000))
-                .signWith(SignatureAlgorithm.HS512, secret).compact();
+                .signWith(SignatureAlgorithm.HS512, secret)
+                .compact();
     }
 
     public Boolean validateToken(String token, UserDetails userDetails) {

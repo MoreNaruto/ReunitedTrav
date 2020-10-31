@@ -2,6 +2,7 @@ package com.tmorris.reunitedtrav.controllers;
 
 import com.tmorris.reunitedtrav.controllers.jsonbodies.AuthenticationReponse;
 import com.tmorris.reunitedtrav.controllers.jsonbodies.AuthenticationRequest;
+import com.tmorris.reunitedtrav.controllers.jsonbodies.TokenValidityRequest;
 import com.tmorris.reunitedtrav.security.util.JwtTokenUtil;
 import com.tmorris.reunitedtrav.services.JpaAccountUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,5 +51,12 @@ public class AuthenticationController {
         UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
         String token = jwtTokenUtil.generateToken(userDetails);
         return ResponseEntity.ok(new AuthenticationReponse(token));
+    }
+
+    @RequestMapping(value = "/token-validity", method = RequestMethod.GET)
+    public ResponseEntity<Boolean> createAuthenticationToken(@RequestBody TokenValidityRequest tokenValidityRequest) throws Exception {
+        UserDetails userDetails = userDetailsService.loadUserByUsername(tokenValidityRequest.getUsername());
+        Boolean isValid = jwtTokenUtil.validateToken(tokenValidityRequest.getToken(), userDetails);
+        return ResponseEntity.ok(isValid);
     }
 }

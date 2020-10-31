@@ -1,71 +1,70 @@
 package com.tmorris.reunitedtrav.security;
 
+import com.google.gson.Gson;
+import com.tmorris.reunitedtrav.models.Account;
 import com.tmorris.reunitedtrav.security.util.JwtTokenUtil;
 import com.tmorris.reunitedtrav.services.JpaAccountUserDetailsService;
-import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.stereotype.Component;
-import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
 
-@Component
-public class JWTAuthenticationFilter extends OncePerRequestFilter {
+import static com.tmorris.reunitedtrav.security.util.SecurityConstants.HEADER_STRING;
+import static com.tmorris.reunitedtrav.security.util.SecurityConstants.TOKEN_PREFIX;
+
+public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private final JpaAccountUserDetailsService userDetailsService;
     private final JwtTokenUtil jwtTokenUtil;
+    private AuthenticationManager authenticationManager;
 
     @Autowired
     public JWTAuthenticationFilter(
             JpaAccountUserDetailsService userDetailsService,
-            JwtTokenUtil jwtTokenUtil
+            JwtTokenUtil jwtTokenUtil,
+            AuthenticationManager authenticationManager
     ) {
         this.userDetailsService = userDetailsService;
         this.jwtTokenUtil = jwtTokenUtil;
+        this.authenticationManager = authenticationManager;
     }
 
     @Override
-    protected void doFilterInternal(
+    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
+        try {
+            Account credentials = new Gson().fromJson(String.valueOf(request.getInputStream()), Account.class);
+
+            return authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            credentials.getUsername(),
+                            credentials.getPassword(),
+                            new ArrayList<>()
+                    )
+            );
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    protected void successfulAuthentication(
             HttpServletRequest request,
             HttpServletResponse response,
-            FilterChain chain) throws ServletException, IOException {
-        final String requestTokenHeader = request.getHeader("Authorization");
+            FilterChain chain,
+            Authentication authResult) throws IOException, ServletException {
+        String token = jwtTokenUtil.generateToken(userDetailsService.loadUserByUsername(((User) authResult.getPrincipal()).getUsername()));
 
-        String username = null;
-        String jwtToken = null;
-
-        if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
-            jwtToken = requestTokenHeader.substring(7);
-            try {
-                username = jwtTokenUtil.getUsernameFromToken(jwtToken);
-            } catch (IllegalArgumentException e) {
-                System.out.println("Unable to get JWT Token");
-            } catch (ExpiredJwtException e) {
-                System.out.println("JWT Token has expired");
-            }
-        } else {
-            logger.warn("JWT Token does not begin with Bearer String");
-        }
-
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-            if (jwtTokenUtil.validateToken(jwtToken, userDetails)) {
-                UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
-                        userDetails, null, userDetails.getAuthorities());
-                usernamePasswordAuthenticationToken
-                        .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-            }
-        }
-
-        chain.doFilter(request, response);
+        response.addHeader(HEADER_STRING, TOKEN_PREFIX + token);
     }
 }
