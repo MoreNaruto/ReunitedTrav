@@ -54,7 +54,7 @@ public class AuthenticationController {
     }
 
     @RequestMapping(value = "/token-validity", method = RequestMethod.GET)
-    public ResponseEntity<Boolean> createAuthenticationToken(@RequestBody TokenValidityRequest tokenValidityRequest) throws Exception {
+    public ResponseEntity<Boolean> isTokenValid(@RequestBody TokenValidityRequest tokenValidityRequest) throws Exception {
         UserDetails userDetails = userDetailsService.loadUserByUsername(tokenValidityRequest.getUsername());
         Boolean isValid = jwtTokenUtil.validateToken(tokenValidityRequest.getToken(), userDetails);
         return ResponseEntity.ok(isValid);
