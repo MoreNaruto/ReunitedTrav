@@ -19,7 +19,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class Family {
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
+    @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Integer id;
 
     @GeneratedValue(generator = "uuid4")

@@ -23,8 +23,10 @@ public class JpaAccountUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String name) throws UsernameNotFoundException {
         Account account = this.repository.findAccountByUsername(name);
-        return new User(account.getUsername(), account.getPassword(),
-                AuthorityUtils.createAuthorityList());
+        if (account == null) {
+            throw new UsernameNotFoundException("Could not find account");
+        }
+        return new JpaAccountUserDetails(account);
     }
 
 }

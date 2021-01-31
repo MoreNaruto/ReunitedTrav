@@ -53,6 +53,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, "/travelers/sign-up").permitAll()
                 .antMatchers(HttpMethod.GET, "/token-validity").permitAll()
                 .antMatchers("/authenticate").permitAll()
+                .antMatchers("/travelers").hasAnyAuthority("ADMIN", "AGENT", "TRAVELER")
+                .antMatchers("/agents").hasAnyAuthority("ADMIN", "AGENT")
                 .anyRequest()
                 .authenticated()
                 .and()

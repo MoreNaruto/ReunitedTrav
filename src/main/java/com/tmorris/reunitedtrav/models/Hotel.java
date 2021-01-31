@@ -24,7 +24,7 @@ import java.util.UUID;
 @ValidDateTime(startTime = "checkIn", endTime = "checkOut")
 public class Hotel {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @GeneratedValue(generator = "uuid4")
