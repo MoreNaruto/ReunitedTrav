@@ -2,7 +2,6 @@ package com.tmorris.reunitedtrav.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.tmorris.reunitedtrav.controllers.jsonbodies.TravelerSignUpForm;
 import com.tmorris.reunitedtrav.serializers.LocalDateTimeDeserializer;
 import com.tmorris.reunitedtrav.serializers.LocalDateTimeSerializer;
 import org.springframework.context.annotation.Configuration;

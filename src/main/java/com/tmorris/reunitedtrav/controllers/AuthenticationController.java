@@ -1,6 +1,7 @@
 package com.tmorris.reunitedtrav.controllers;
 
-import com.tmorris.reunitedtrav.controllers.jsonbodies.AuthenticationReponse;
+import com.tmorris.reunitedtrav.annotations.JsonRequestMapping;
+import com.tmorris.reunitedtrav.controllers.jsonbodies.AuthenticationResponse;
 import com.tmorris.reunitedtrav.controllers.jsonbodies.AuthenticationRequest;
 import com.tmorris.reunitedtrav.controllers.jsonbodies.TokenValidityRequest;
 import com.tmorris.reunitedtrav.security.util.JwtTokenUtil;
@@ -33,8 +34,11 @@ public class AuthenticationController {
         this.userDetailsService = userDetailsService;
     }
 
-    @RequestMapping(value = "/authenticate", method = RequestMethod.POST)
-    public ResponseEntity<AuthenticationReponse> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) throws Exception {
+    @JsonRequestMapping(value = "/authenticate", method = RequestMethod.POST)
+    public ResponseEntity<AuthenticationResponse> createAuthenticationToken(@RequestBody(required = false) AuthenticationRequest authenticationRequest) throws Exception {
+        if (authenticationRequest == null) {
+            return null;
+        }
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -50,11 +54,14 @@ public class AuthenticationController {
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
         String token = jwtTokenUtil.generateToken(userDetails);
-        return ResponseEntity.ok(new AuthenticationReponse(token));
+        return ResponseEntity.ok(new AuthenticationResponse(token));
     }
 
-    @RequestMapping(value = "/token-validity", method = RequestMethod.GET)
-    public ResponseEntity<Boolean> isTokenValid(@RequestBody TokenValidityRequest tokenValidityRequest) throws Exception {
+    @JsonRequestMapping(value = "/token-validity", method = RequestMethod.GET)
+    public ResponseEntity<Boolean> isTokenValid(@RequestBody(required = false) TokenValidityRequest tokenValidityRequest) throws Exception {
+        if (tokenValidityRequest == null) {
+            return null;
+        }
         UserDetails userDetails = userDetailsService.loadUserByUsername(tokenValidityRequest.getUsername());
         Boolean isValid = jwtTokenUtil.validateToken(tokenValidityRequest.getToken(), userDetails);
         return ResponseEntity.ok(isValid);

@@ -11,7 +11,7 @@ import java.io.Serializable;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AuthenticationReponse implements Serializable {
+public class AuthenticationResponse implements Serializable {
     private static final long serialVersionUID = 3930190626895020902L;
     private String jwt;
 }
