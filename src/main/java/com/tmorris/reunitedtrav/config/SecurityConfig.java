@@ -1,5 +1,6 @@
 package com.tmorris.reunitedtrav.config;
 
+import com.tmorris.reunitedtrav.models.Role;
 import com.tmorris.reunitedtrav.security.JWTAuthenticationEntryPoint;
 import com.tmorris.reunitedtrav.security.JWTAuthenticationFilter;
 import com.tmorris.reunitedtrav.security.JWTAuthorizationFilter;
@@ -53,8 +54,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, "/travelers/sign-up").permitAll()
                 .antMatchers(HttpMethod.GET, "/token-validity").permitAll()
                 .antMatchers("/authenticate").permitAll()
-                .antMatchers("/travelers").hasAnyAuthority("ADMIN", "AGENT", "TRAVELER")
-                .antMatchers("/agents").hasAnyAuthority("ADMIN", "AGENT")
+                .antMatchers("/travelers").hasAnyAuthority(Role.ROLE_ADMIN, Role.ROLE_AGENT, Role.ROLE_TRAVELER)
+                .antMatchers("/agents").hasAnyAuthority(Role.ROLE_ADMIN, Role.ROLE_AGENT)
                 .anyRequest()
                 .authenticated()
                 .and()
