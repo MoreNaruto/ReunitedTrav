@@ -25,6 +25,9 @@ public class Address {
     @NotNull(message = "A state needs to be provided")
     private String state;
 
+    @NotNull(message = "A country needs to be provided")
+    private String country;
+
     @NotNull(message = "A zipcode needs to be provided")
     private String zipCode;
 }

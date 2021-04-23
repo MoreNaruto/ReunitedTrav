@@ -20,6 +20,7 @@ class AddressConverterTest {
                 .apartmentNumber("111")
                 .city("Chicago")
                 .state("IL")
+                .country("US")
                 .streetOne("123 N. State")
                 .zipCode("60601")
                 .build();

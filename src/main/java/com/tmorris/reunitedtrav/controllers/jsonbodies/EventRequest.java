@@ -28,6 +28,7 @@ public class EventRequest {
     private String apartmentNumber;
     private String city;
     private String state;
+    private String country;
     private String zipCode;
     private Boolean adultOnly;
     private String notes;

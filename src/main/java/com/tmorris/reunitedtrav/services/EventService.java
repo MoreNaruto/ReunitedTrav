@@ -38,6 +38,7 @@ public class EventService {
                         .streetTwo(request.getStreetTwo())
                         .state(request.getState())
                         .city(request.getCity())
+                        .country(request.getCountry())
                         .apartmentNumber(request.getApartmentNumber())
                         .build())
                 .adultOnly(request.getAdultOnly())
